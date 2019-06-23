@@ -9,9 +9,11 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
 import io.ktor.gson.gson
 import io.ktor.http.ContentType
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.get
+import io.ktor.routing.post
 import io.ktor.routing.routing
 import java.text.DateFormat
 import java.util.*
@@ -56,6 +58,16 @@ fun Application.main() {
                 call.parameters["id"]?.toIntOrNull()
                     ?: throw IllegalArgumentException("parameter id is not present")
             call.respond(users.firstOrNull { it.id == id } ?: throw Exception("No user found"))
+        }
+
+        post("addUser") {
+            val user: User = call.receive()
+            if (!users.any { it.firstName == user.firstName && it.lastName == user.lastName }) {
+                users.add(user.copy(id = users.last().id + 1))
+                call.respondText("""{"success":true}""", ContentType.Text.Html)
+            } else {
+                call.respondText("""{"msg":"user already exists"}""", ContentType.parse("application/json"))
+            }
         }
     }
 }
