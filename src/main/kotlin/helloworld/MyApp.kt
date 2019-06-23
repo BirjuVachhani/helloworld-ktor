@@ -69,6 +69,15 @@ fun Application.main() {
                 call.respondText("""{"msg":"user already exists"}""", ContentType.parse("application/json"))
             }
         }
+
+        post("deleteUser") {
+            val id: Int = call.parameters["id"]?.toIntOrNull() ?: throw Exception("parameter id is missing")
+            if (users.removeIf { it.id == id }) {
+                call.respondText("""{"success":true}""", ContentType.parse("application/json"))
+            } else {
+                call.respondText("""{"msg":"No user found"}""", ContentType.parse("application/json"))
+            }
+        }
     }
 }
 
