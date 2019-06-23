@@ -43,6 +43,20 @@ fun Application.main() {
         get("/users") {
             call.respond(users)
         }
+        // e.g http://localhost:8082/user/1
+        get("/user/{id}") {
+            val id: Int =
+                call.parameters["id"]?.toIntOrNull()
+                    ?: throw IllegalArgumentException("parameter id is not present")
+            call.respond(users.firstOrNull { it.id == id } ?: throw Exception("No user found"))
+        }
+        // e.g http://localhost:8082/user?id=2
+        get("/user") {
+            val id: Int =
+                call.parameters["id"]?.toIntOrNull()
+                    ?: throw IllegalArgumentException("parameter id is not present")
+            call.respond(users.firstOrNull { it.id == id } ?: throw Exception("No user found"))
+        }
     }
 }
 
